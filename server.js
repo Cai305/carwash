@@ -8,8 +8,15 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 
 const app = express();
+
+// Allow CORS for all domains
+app.use(cors({
+  origin: '*', // Allow all domains
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+}));
+
 app.use(express.json());
-app.use(cors());
 app.use(helmet());
 
 const limiter = rateLimit({
