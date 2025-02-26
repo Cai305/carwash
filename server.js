@@ -139,7 +139,7 @@ app.get('/api/my-cars', authenticate, async (req, res) => {
 
 app.get('/api/carwashes', authenticate, async (req, res) => {
   try {
-    const carWashes = await User.find({ type: 'carwash' }).select('name location'); // Only return name and location
+    const carWashes = await User.find({ type: 'carwash' }).select('name _id'); // Return name and _id
     res.json(carWashes);
   } catch (error) {
     res.status(400).json({ error: error.message });
