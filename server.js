@@ -64,13 +64,25 @@ const authenticate = async (req, res, next) => {
 };
 
 // Routes
+
 app.post('/api/register', async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const { name, email, password, type, location } = req.body;
+
+    // Validate required fields for car wash registration
+    if (type === 'carwash' && (!name || !location)) {
+      return res.status(400).json({ error: 'Name and location are required for car wash registration' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
-      ...req.body,
-      password: hashedPassword
+      name,
+      email,
+      password: hashedPassword,
+      type,
+      location: type === 'carwash' ? location : undefined, // Only include location for car wash users
     });
+
     await user.save();
     res.status(201).json(user);
   } catch (error) {
@@ -127,12 +139,13 @@ app.get('/api/my-cars', async (req, res) => {
 
 app.get('/api/carwashes', async (req, res) => {
   try {
-    const carWashes = await User.find({ type: 'carwash' });
+    const carWashes = await User.find({ type: 'carwash' }).select('name _id'); // Return name and _id
     res.json(carWashes);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
+
 
 app.get('/api/carwash/cars', authenticate, async (req, res) => {
   try {
