@@ -64,25 +64,13 @@ const authenticate = async (req, res, next) => {
 };
 
 // Routes
-
 app.post('/api/register', async (req, res) => {
   try {
-    const { name, email, password, type, location } = req.body;
-
-    // Validate required fields for car wash registration
-    if (type === 'carwash' && (!name || !location)) {
-      return res.status(400).json({ error: 'Name and location are required for car wash registration' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = new User({
-      name,
-      email,
-      password: hashedPassword,
-      type,
-      location: type === 'carwash' ? location : undefined, // Only include location for car wash users
+      ...req.body,
+      password: hashedPassword
     });
-
     await user.save();
     res.status(201).json(user);
   } catch (error) {
@@ -139,15 +127,14 @@ app.get('/api/my-cars', async (req, res) => {
 
 app.get('/api/carwashes', async (req, res) => {
   try {
-    const carWashes = await User.find({ type: 'carwash' }).select('name _id'); // Return name and _id
+    const carWashes = await User.find({ type: 'carwash' });
     res.json(carWashes);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-
-app.get('/api/carwash/cars', authenticate, async (req, res) => {
+app.get('/api/carwash/cars',  async (req, res) => {
   try {
     // Ensure the user is a car wash
     if (req.user.type !== 'carwash') {
@@ -184,7 +171,7 @@ app.patch('/api/carwash/cars/:id',  async (req, res) => {
   }
 });
 
-app.get('/api/carwash/all-cars',  async (req, res) => {
+app.get('/api/carwash/all-cars', async (req, res) => {
   try {
     // Ensure the user is a car wash
     if (req.user.type !== 'carwash') {
