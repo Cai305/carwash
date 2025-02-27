@@ -88,7 +88,7 @@ app.post('/api/login', async (req, res) => {
   res.json({ token, user });
 });
 
-app.post('/api/cars', authenticate, async (req, res) => {
+app.post('/api/cars', async (req, res) => {
   try {
     const { licensePlate, carWashId } = req.body;
 
@@ -111,7 +111,7 @@ app.post('/api/cars', authenticate, async (req, res) => {
   }
 });
 
-app.get('/api/my-cars', authenticate, async (req, res) => {
+app.get('/api/my-cars', async (req, res) => {
   try {
     // Ensure the user is an individual
     if (req.user.type !== 'individual') {
@@ -125,7 +125,7 @@ app.get('/api/my-cars', authenticate, async (req, res) => {
   }
 });
 
-app.get('/api/carwashes', authenticate, async (req, res) => {
+app.get('/api/carwashes', async (req, res) => {
   try {
     const carWashes = await User.find({ type: 'carwash' });
     res.json(carWashes);
@@ -148,7 +148,7 @@ app.get('/api/carwash/cars', authenticate, async (req, res) => {
   }
 });
 
-app.patch('/api/carwash/cars/:id', authenticate, async (req, res) => {
+app.patch('/api/carwash/cars/:id',  async (req, res) => {
   try {
     // Ensure the user is a car wash
     if (req.user.type !== 'carwash') {
@@ -171,7 +171,7 @@ app.patch('/api/carwash/cars/:id', authenticate, async (req, res) => {
   }
 });
 
-app.get('/api/carwash/all-cars', authenticate, async (req, res) => {
+app.get('/api/carwash/all-cars',  async (req, res) => {
   try {
     // Ensure the user is a car wash
     if (req.user.type !== 'carwash') {
